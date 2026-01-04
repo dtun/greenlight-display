@@ -1,0 +1,12 @@
+{
+	"timestamp": "2026-01-03T10:30:00Z",
+	"accounts": [
+		{
+			"name": "Alice",
+			"spending": 25.5,
+			"savings": 100,
+			"total": 125.5
+		}
+	],
+	"parentWallet": 50
+}
