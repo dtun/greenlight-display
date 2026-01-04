@@ -75,6 +75,18 @@ bun build
 # Type check all TypeScript packages
 bun typecheck
 
+# Run all tests
+bun test
+
+# Run tests in watch mode
+bun test:watch
+
+# Run tests with UI
+bun test:ui
+
+# Run tests with coverage
+bun test:coverage
+
 # Format code with Prettier
 bun format
 
@@ -107,7 +119,7 @@ Deployment is handled via Cloudflare Workers and Wrangler. See implementation pr
 This project follows a structured 7-phase implementation plan:
 
 1. ✅ Monorepo Setup (Prompt 01)
-2. ⬜ Test Infrastructure (Prompt 02)
+2. ✅ Test Infrastructure (Prompt 02)
 3. ⬜ Shared Package (Prompt 03)
 4. ⬜ Scraper Service (Prompt 04)
 5. ⬜ TRMNL Plugin (Prompt 05)
