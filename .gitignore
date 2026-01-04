@@ -1,2 +1,21 @@
 reference-files
 CLAUDE.md
+
+# Dependencies
+node_modules
+
+# Build outputs
+dist/
+build/
+
+# Environment variables
+.env
+
+# Turborepo
+.turbo/
+
+# Logs
+*.log
+
+# Bun lockfile
+bun.lockb

@@ -1,0 +1,15 @@
+# TRMNL Plugin Settings for Greenlight Balance Display
+name: "Greenlight Balance"
+description: "Display Greenlight account balances for kids"
+version: "1.0.0"
+
+# Plugin configuration (to be filled in Prompt 05)
+settings:
+  - name: api_url
+    type: string
+    description: "URL of the Greenlight scraper API"
+    required: true
+  - name: api_key
+    type: string
+    description: "API key for authentication"
+    required: true

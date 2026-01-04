@@ -1,0 +1,19 @@
+<!--
+  TRMNL Plugin Template for Greenlight Balance Display
+  This template will be fully implemented in Prompt 05
+-->
+
+<div class="greenlight-display">
+	<h1>Greenlight Balances</h1>
+
+	{% for account in accounts %}
+	<div class="account">
+		<span class="name">{{ account.childName }}</span>
+		<span class="balance">{{ account.currency }}{{ account.balance }}</span>
+	</div>
+	{% endfor %}
+
+	<div class="footer">
+		<span class="timestamp">Last updated: {{ timestamp }}</span>
+	</div>
+</div>

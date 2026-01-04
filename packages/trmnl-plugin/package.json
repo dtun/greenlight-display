@@ -1,0 +1,6 @@
+{
+	"name": "@greenlight-trmnl/trmnl-plugin",
+	"version": "1.0.0",
+	"description": "TRMNL plugin for displaying Greenlight account balances",
+	"private": true
+}
