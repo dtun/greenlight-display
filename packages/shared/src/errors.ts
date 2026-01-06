@@ -3,7 +3,8 @@
  */
 export class ScraperError extends Error {
 	constructor(message: string, public code: string) {
-		throw new Error('ScraperError not implemented yet')
+		super(message)
+		this.name = 'ScraperError'
 	}
 }
 
@@ -12,7 +13,8 @@ export class ScraperError extends Error {
  */
 export class AuthenticationError extends ScraperError {
 	constructor(message: string = 'Authentication failed') {
-		throw new Error('AuthenticationError not implemented yet')
+		super(message, 'AUTH_ERROR')
+		this.name = 'AuthenticationError'
 	}
 }
 
@@ -21,7 +23,8 @@ export class AuthenticationError extends ScraperError {
  */
 export class ScrapingError extends ScraperError {
 	constructor(message: string = 'Failed to scrape data') {
-		throw new Error('ScrapingError not implemented yet')
+		super(message, 'SCRAPE_ERROR')
+		this.name = 'ScrapingError'
 	}
 }
 
@@ -30,6 +33,7 @@ export class ScrapingError extends ScraperError {
  */
 export class ValidationError extends ScraperError {
 	constructor(message: string = 'Data validation failed') {
-		throw new Error('ValidationError not implemented yet')
+		super(message, 'VALIDATION_ERROR')
+		this.name = 'ValidationError'
 	}
 }
