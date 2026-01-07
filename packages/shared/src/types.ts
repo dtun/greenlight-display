@@ -1,22 +1,49 @@
-// Greenlight account data structure
-export interface GreenlightAccount {
-	childName: string
-	balance: number
-	currency: string
-	lastUpdated: Date
+/**
+ * Individual child account with spending, savings, and total balance
+ */
+export interface Account {
+	name: string
+	spending: number
+	savings: number
+	total: number
 }
 
-// Scraper configuration
+/**
+ * Complete balance data with timestamp and all accounts
+ */
+export interface BalanceData {
+	timestamp: string // ISO 8601 format
+	accounts: Account[]
+	parentWallet: number
+}
+
+/**
+ * Standardized API response wrapper
+ */
+export interface ApiResponse {
+	success: boolean
+	data?: BalanceData
+	error?: string
+	message?: string
+}
+
+/**
+ * Scraper service configuration
+ */
 export interface ScraperConfig {
 	email: string
 	password: string
-	updateInterval: number
+	apiKey: string
+	port: number
+	headless: boolean
+	cacheTtlMinutes: number
 }
 
-// TRMNL display payload
-export interface TRMNLPayload {
-	accounts: GreenlightAccount[]
-	timestamp: string
-	status: 'success' | 'error'
-	error?: string
+/**
+ * Generic cache entry with data and expiration
+ */
+export interface CacheEntry<T> {
+	data: T
+	timestamp: number
+	expiresAt: number
 }
