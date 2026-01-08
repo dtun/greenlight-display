@@ -3,7 +3,10 @@
  * @example formatCurrency(125.5) // "$125.50"
  */
 export function formatCurrency(amount: number): string {
-	throw new Error('formatCurrency not implemented yet')
+	return new Intl.NumberFormat('en-US', {
+		style: 'currency',
+		currency: 'USD',
+	}).format(amount)
 }
 
 /**
@@ -11,7 +14,30 @@ export function formatCurrency(amount: number): string {
  * @example formatTimestamp("2026-01-03T10:30:00Z") // "Jan 3, 10:30 AM"
  */
 export function formatTimestamp(isoString: string): string {
-	throw new Error('formatTimestamp not implemented yet')
+	let date = new Date(isoString)
+
+	// Check if date is valid
+	if (isNaN(date.getTime())) {
+		throw new Error('Invalid ISO 8601 timestamp')
+	}
+
+	// Format date part: "Jan 3"
+	let dateFormatter = new Intl.DateTimeFormat('en-US', {
+		month: 'short',
+		day: 'numeric',
+	})
+
+	// Format time part: "10:30 AM"
+	let timeFormatter = new Intl.DateTimeFormat('en-US', {
+		hour: 'numeric',
+		minute: '2-digit',
+		hour12: true,
+	})
+
+	let datePart = dateFormatter.format(date)
+	let timePart = timeFormatter.format(date)
+
+	return `${datePart}, ${timePart}`
 }
 
 /**
@@ -19,7 +45,7 @@ export function formatTimestamp(isoString: string): string {
  * @example parseCurrencyString("$1,234.56") // 1234.56
  */
 export function parseCurrencyString(currencyStr: string): number {
-	throw new Error('parseCurrencyString not implemented yet')
+	return parseFloat(currencyStr.replace(/[$,\s]/g, ''))
 }
 
 /**
@@ -27,5 +53,5 @@ export function parseCurrencyString(currencyStr: string): number {
  * @example sanitizeAccountName("  Alice  ") // "Alice"
  */
 export function sanitizeAccountName(name: string): string {
-	throw new Error('sanitizeAccountName not implemented yet')
+	return name.trim().substring(0, 50)
 }
