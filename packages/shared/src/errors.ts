@@ -2,7 +2,10 @@
  * Base error class for scraper-related errors
  */
 export class ScraperError extends Error {
-	constructor(message: string, public code: string) {
+	constructor(
+		message: string,
+		public code: string
+	) {
 		super(message)
 		this.name = 'ScraperError'
 	}

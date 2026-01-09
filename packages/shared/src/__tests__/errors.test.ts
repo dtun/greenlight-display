@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-	ScraperError,
-	AuthenticationError,
-	ScrapingError,
-	ValidationError,
-} from '../errors'
+import { ScraperError, AuthenticationError, ScrapingError, ValidationError } from '../errors'
 
 describe('ScraperError', () => {
 	it('should create error with message and code', () => {

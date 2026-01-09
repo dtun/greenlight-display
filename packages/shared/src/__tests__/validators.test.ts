@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-	isValidAccount,
-	isValidBalanceData,
-	isValidApiKey,
-	validateEnvConfig,
-} from '../validators'
+import { isValidAccount, isValidBalanceData, isValidApiKey, validateEnvConfig } from '../validators'
 import { ValidationError } from '../errors'
 import type { Account, BalanceData } from '../types'
 

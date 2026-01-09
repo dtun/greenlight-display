@@ -1,11 +1,5 @@
 // Export all types
-export type {
-	Account,
-	BalanceData,
-	ApiResponse,
-	ScraperConfig,
-	CacheEntry,
-} from './types.js'
+export type { Account, BalanceData, ApiResponse, ScraperConfig, CacheEntry } from './types.js'
 
 // Export all constants
 export * from './constants.js'
