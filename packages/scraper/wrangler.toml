@@ -1,12 +1,79 @@
+# Greenlight Scraper - Cloudflare Workers Configuration
+# Deploys the balance scraper API to Cloudflare's edge network
+
 name = "greenlight-scraper"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
 
-# Browser Rendering binding (to be configured)
-# [browser]
-# binding = "BROWSER"
+# Account ID - set via environment or replace placeholder
+# account_id = "your-account-id"
 
-# KV namespace bindings (to be configured)
-# [[kv_namespaces]]
-# binding = "CACHE"
-# id = "your-kv-namespace-id"
+# Workers configuration - use workers.dev subdomain by default
+workers_dev = true
+
+# Browser Rendering API binding
+[browser]
+binding = "BROWSER"
+
+# KV Namespaces - IDs populated by cf-setup.sh script
+# Production namespace
+[[kv_namespaces]]
+binding = "CACHE"
+id = "placeholder-replace-with-actual-id"
+
+# Build configuration
+[build]
+command = "bun run build"
+
+# Observability - enable logging and metrics
+[observability]
+enabled = true
+
+# CPU limits for Browser Rendering operations (needs more time)
+[limits]
+cpu_ms = 50000
+
+# ============================================
+# Environment-specific configurations
+# ============================================
+
+# Development environment
+[env.development]
+name = "greenlight-scraper-dev"
+workers_dev = true
+
+[[env.development.kv_namespaces]]
+binding = "CACHE"
+id = "placeholder-dev-replace-with-actual-id"
+
+[env.development.browser]
+binding = "BROWSER"
+
+# Staging environment
+[env.staging]
+name = "greenlight-scraper-staging"
+workers_dev = true
+# Uncomment for custom domain:
+# route = { pattern = "api-staging.yourdomain.com/*", zone_name = "yourdomain.com" }
+
+[[env.staging.kv_namespaces]]
+binding = "CACHE"
+id = "placeholder-staging-replace-with-actual-id"
+
+[env.staging.browser]
+binding = "BROWSER"
+
+# Production environment
+[env.production]
+name = "greenlight-scraper-prod"
+workers_dev = false
+# Uncomment and configure for custom domain:
+# route = { pattern = "api.yourdomain.com/*", zone_name = "yourdomain.com" }
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "placeholder-prod-replace-with-actual-id"
+
+[env.production.browser]
+binding = "BROWSER"
