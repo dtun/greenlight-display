@@ -21,17 +21,19 @@ export function formatTimestamp(isoString: string): string {
 		throw new Error('Invalid ISO 8601 timestamp')
 	}
 
-	// Format date part: "Jan 3"
+	// Format date part: "Jan 3" (in UTC for consistency)
 	let dateFormatter = new Intl.DateTimeFormat('en-US', {
 		month: 'short',
 		day: 'numeric',
+		timeZone: 'UTC',
 	})
 
-	// Format time part: "10:30 AM"
+	// Format time part: "10:30 AM" (in UTC for consistency)
 	let timeFormatter = new Intl.DateTimeFormat('en-US', {
 		hour: 'numeric',
 		minute: '2-digit',
 		hour12: true,
+		timeZone: 'UTC',
 	})
 
 	let datePart = dateFormatter.format(date)
