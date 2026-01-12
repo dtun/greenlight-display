@@ -1,0 +1,33 @@
+<!--
+  Quadrant Layout (~400x240px)
+  Most compact view - essential info only
+-->
+
+<div class="view view--quadrant">
+  <div class="layout layout--col gap--space-between" style="height: 100%;">
+    <div class="content">
+      <h1 class="title title--small">Greenlight</h1>
+
+      {% if merge_variables.accounts.size > 0 %}
+        <div class="layout layout--col gap--small" style="margin-top: 4px;">
+          {% for account in merge_variables.accounts limit: 3 %}
+            <div class="layout layout--row gap--space-between">
+              <span class="label label--small">{{ account.name }}</span>
+              <span class="value value--medium">${{ account.total | round: 2 }}</span>
+            </div>
+          {% endfor %}
+
+          {% if merge_variables.accounts.size > 3 %}
+            <span class="description">+{{ merge_variables.accounts.size | minus: 3 }} more</span>
+          {% endif %}
+        </div>
+      {% else %}
+        <p class="description">No accounts</p>
+      {% endif %}
+    </div>
+
+    <div class="footer">
+      <span class="label label--small">{{ merge_variables.timestamp | date: "%I:%M %p" }}</span>
+    </div>
+  </div>
+</div>

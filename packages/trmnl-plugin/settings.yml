@@ -1,15 +1,30 @@
 # TRMNL Plugin Settings for Greenlight Balance Display
+# Displays kids' Greenlight account balances on TRMNL e-ink display
+
 name: "Greenlight Balance"
-description: "Display Greenlight account balances for kids"
+description: "Display Greenlight account balances for kids on your TRMNL e-ink display"
 version: "1.0.0"
 
-# Plugin configuration (to be filled in Prompt 05)
-settings:
-  - name: api_url
-    type: string
-    description: "URL of the Greenlight scraper API"
+# Polling strategy configuration
+strategy: polling
+polling_verb: GET
+polling_url: "{{ api_endpoint }}/balances"
+polling_headers:
+  Authorization: "Bearer {{ api_key }}"
+  Content-Type: "application/json"
+polling_interval: 900  # 15 minutes in seconds
+
+# Form fields for user configuration
+form_fields:
+  - keyname: api_endpoint
+    field_type: text
+    name: "API Endpoint"
+    description: "Your scraper service URL"
+    help_text: "Example: https://greenlight-scraper.your-domain.workers.dev"
     required: true
-  - name: api_key
-    type: string
-    description: "API key for authentication"
+  - keyname: api_key
+    field_type: text
+    name: "API Key"
+    description: "Your API authentication key"
+    help_text: "The Bearer token configured in your scraper's API_KEY environment variable"
     required: true

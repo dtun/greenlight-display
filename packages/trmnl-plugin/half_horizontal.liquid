@@ -1,0 +1,48 @@
+<!--
+  Half Horizontal Layout (~400x480px)
+  Compact vertical view showing names and totals
+-->
+
+<div class="view view--half-horizontal">
+  <div class="layout layout--col gap--space-between" style="height: 100%;">
+    <div class="content">
+      <h1 class="title title--medium">Greenlight</h1>
+
+      {% if merge_variables.accounts.size > 0 %}
+        <div class="layout layout--col gap--medium" style="margin-top: 12px;">
+          {% for account in merge_variables.accounts %}
+            <div class="item">
+              <div class="layout layout--row gap--space-between">
+                <span class="label">{{ account.name }}</span>
+                <span class="value value--medium">${{ account.total | round: 2 }}</span>
+              </div>
+              <div class="layout layout--row gap--small" style="margin-top: 4px;">
+                <span class="description">Spend: ${{ account.spending | round: 2 }}</span>
+                <span class="description">Save: ${{ account.savings | round: 2 }}</span>
+              </div>
+            </div>
+
+            {% unless forloop.last %}
+              <hr class="divider" />
+            {% endunless %}
+          {% endfor %}
+        </div>
+
+        {% if merge_variables.parentWallet %}
+          <div class="item" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #000;">
+            <div class="layout layout--row gap--space-between">
+              <span class="label">Parent</span>
+              <span class="value value--medium">${{ merge_variables.parentWallet | round: 2 }}</span>
+            </div>
+          </div>
+        {% endif %}
+      {% else %}
+        <p class="description">No accounts</p>
+      {% endif %}
+    </div>
+
+    <div class="footer">
+      <span class="label label--small">{{ merge_variables.timestamp | date: "%b %d, %I:%M %p" }}</span>
+    </div>
+  </div>
+</div>
