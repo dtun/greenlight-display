@@ -1,13 +1,34 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { healthRoute } from './routes/health'
+import { balancesRoute } from './routes/balances'
+import { authMiddleware } from './middleware/auth'
+import { errorHandler } from './middleware/error'
 
-let app = new Hono()
+type Bindings = {
+	KV_CACHE: KVNamespace
+	API_KEY: string
+	GREENLIGHT_EMAIL: string
+	GREENLIGHT_PASSWORD: string
+	BROWSER: Fetcher
+}
 
+let app = new Hono<{ Bindings: Bindings }>()
+
+// Global middleware
+app.use('*', cors())
+
+// Public routes
 app.get('/', (c) => {
 	return c.json({ message: 'Greenlight scraper API' })
 })
+app.route('/health', healthRoute)
 
-app.get('/health', (c) => {
-	return c.json({ status: 'ok' })
-})
+// Protected routes
+app.use('/api/*', authMiddleware)
+app.route('/api/balances', balancesRoute)
+
+// Error handling
+app.onError(errorHandler)
 
 export default app
