@@ -1,6 +1,6 @@
 <!--
   Quadrant Layout (~400x240px)
-  Most compact view - essential info only
+  Compact view with account balances
 -->
 
 <div class="view view--quadrant">
@@ -10,17 +10,30 @@
 
       {% if merge_variables.accounts.size > 0 %}
         <div class="layout layout--col gap--small" style="margin-top: 4px;">
-          {% for account in merge_variables.accounts limit: 3 %}
-            <div class="layout layout--row gap--space-between">
-              <span class="label label--small">{{ account.name }}</span>
-              <span class="value value--medium">${{ account.total | round: 2 }}</span>
+          {% for account in merge_variables.accounts limit: 2 %}
+            <div class="item">
+              <div class="layout layout--row gap--space-between">
+                <span class="label label--small">{{ account.name }}</span>
+                <span class="value value--medium">${{ account.total | round: 2 }}</span>
+              </div>
+              <div class="layout layout--row gap--small">
+                <span class="description">S: ${{ account.spending | round: 2 }}</span>
+                <span class="description">V: ${{ account.savings | round: 2 }}</span>
+              </div>
             </div>
           {% endfor %}
 
-          {% if merge_variables.accounts.size > 3 %}
-            <span class="description">+{{ merge_variables.accounts.size | minus: 3 }} more</span>
+          {% if merge_variables.accounts.size > 2 %}
+            <span class="description">+{{ merge_variables.accounts.size | minus: 2 }} more</span>
           {% endif %}
         </div>
+
+        {% if merge_variables.parentWallet %}
+          <div class="layout layout--row gap--space-between" style="margin-top: 4px;">
+            <span class="label label--small">Parent</span>
+            <span class="value value--small">${{ merge_variables.parentWallet | round: 2 }}</span>
+          </div>
+        {% endif %}
       {% else %}
         <p class="description">No accounts</p>
       {% endif %}
