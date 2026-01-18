@@ -5,10 +5,12 @@ import type { BalanceData } from '@greenlight-trmnl/shared'
 
 describe('GreenlightScraper', () => {
 	let mockPage: ReturnType<typeof createMockBrowser>['mockPage']
+	let mockElementHandle: ReturnType<typeof createMockBrowser>['mockElementHandle']
 
 	beforeEach(() => {
 		let mocks = createMockBrowser()
 		mockPage = mocks.mockPage
+		mockElementHandle = mocks.mockElementHandle
 		vi.clearAllMocks()
 	})
 
@@ -23,7 +25,7 @@ describe('GreenlightScraper', () => {
 	})
 
 	describe('login', () => {
-		it('should navigate to login page', async () => {
+		it('should navigate to auth page', async () => {
 			// Arrange
 			let scraper = new GreenlightScraper('test@example.com', 'password123')
 			mockPage.waitForSelector.mockResolvedValue(undefined)
@@ -33,12 +35,12 @@ describe('GreenlightScraper', () => {
 
 			// Assert
 			expect(mockPage.goto).toHaveBeenCalledWith(
-				'https://greenlight.com/login',
+				'https://auth.greenlight.com/',
 				expect.objectContaining({ waitUntil: 'networkidle0' })
 			)
 		})
 
-		it('should fill in email and password', async () => {
+		it('should find and fill input fields', async () => {
 			// Arrange
 			let scraper = new GreenlightScraper('test@example.com', 'password123')
 			mockPage.waitForSelector.mockResolvedValue(undefined)
@@ -46,9 +48,10 @@ describe('GreenlightScraper', () => {
 			// Act
 			await scraper.login(mockPage as any)
 
-			// Assert
-			expect(mockPage.type).toHaveBeenCalledWith('input[type="email"]', 'test@example.com')
-			expect(mockPage.type).toHaveBeenCalledWith('input[type="password"]', 'password123')
+			// Assert - uses page.$() to find elements, then types on element handle
+			expect(mockPage.$).toHaveBeenCalled()
+			expect(mockElementHandle.type).toHaveBeenCalledWith('test@example.com')
+			expect(mockElementHandle.type).toHaveBeenCalledWith('password123')
 		})
 
 		it('should submit the login form', async () => {
@@ -59,14 +62,14 @@ describe('GreenlightScraper', () => {
 			// Act
 			await scraper.login(mockPage as any)
 
-			// Assert
-			expect(mockPage.click).toHaveBeenCalledWith('button[type="submit"]')
+			// Assert - clicks on element handle returned by page.$
+			expect(mockElementHandle.click).toHaveBeenCalled()
 		})
 
 		it('should throw error on login failure', async () => {
 			// Arrange
 			let scraper = new GreenlightScraper('test@example.com', 'wrong-password')
-			mockPage.waitForSelector.mockImplementation(async (selector: string, options?: any) => {
+			mockPage.waitForSelector.mockImplementation(async (selector: string) => {
 				if (selector.includes('dashboard')) {
 					throw new Error('Timeout waiting for selector')
 				}

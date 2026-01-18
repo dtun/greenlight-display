@@ -1,30 +1,76 @@
-import type { Page } from '@cloudflare/puppeteer'
 import type { BalanceData } from '@greenlight-trmnl/shared'
 
+// Using 'any' for Page due to type conflicts between @cloudflare/puppeteer
+// (which needs DOM types) and @cloudflare/workers-types (which conflicts with DOM).
+// The runtime types are correct - this is just a TypeScript compilation issue.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Page = any
+
 export class GreenlightScraper {
-	private email: string
+	private username: string
 	private password: string
 
-	constructor(email: string, password: string) {
-		this.email = email
+	constructor(username: string, password: string) {
+		this.username = username
 		this.password = password
 	}
 
 	async login(page: Page): Promise<void> {
 		// Navigate to login page
-		await page.goto('https://greenlight.com/login', {
+		await page.goto('https://auth.greenlight.com/', {
 			waitUntil: 'networkidle0',
 		})
 
-		// Fill in credentials
-		await page.waitForSelector('input[type="email"]')
-		await page.type('input[type="email"]', this.email)
-		await page.type('input[type="password"]', this.password)
+		// Wait for page to stabilize
+		await new Promise((r) => setTimeout(r, 2000))
 
-		// Submit form
+		// Debug: log page content to help identify selectors
+		let pageContent = await page.content()
+		console.log('Page title:', await page.title())
+		console.log('Page URL:', page.url())
+
+		// Try multiple selector strategies for the username field
+		let usernameInput = await page.$('input[type="text"]')
+		if (!usernameInput) usernameInput = await page.$('input[type="tel"]')
+		if (!usernameInput) usernameInput = await page.$('input[name="username"]')
+		if (!usernameInput) usernameInput = await page.$('input[name="phone"]')
+		if (!usernameInput)
+			usernameInput = await page.$('input:not([type="password"]):not([type="hidden"])')
+
+		if (!usernameInput) {
+			// Log available inputs for debugging
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			let inputs = await page.$$eval('input', (els: any[]) =>
+				els.map((e: any) => ({ type: e.type, name: e.name, id: e.id, placeholder: e.placeholder }))
+			)
+			console.log('Available inputs:', JSON.stringify(inputs))
+			throw new Error('Could not find username input field')
+		}
+		await usernameInput.type(this.username)
+
+		// Fill password
+		let passwordInput = await page.$('input[type="password"]')
+		if (!passwordInput) {
+			throw new Error('Could not find password input field')
+		}
+		await passwordInput.type(this.password)
+
+		// Submit form - look for Sign in button
+		let submitButton = await page.$('button[type="submit"]')
+		if (!submitButton) {
+			// Try finding button by text content
+			submitButton = await page.evaluateHandle(() => {
+				let buttons = Array.from(document.querySelectorAll('button'))
+				return buttons.find((b) => b.textContent?.toLowerCase().includes('sign in'))
+			})
+		}
+		if (!submitButton) {
+			throw new Error('Could not find submit button')
+		}
+
 		await Promise.all([
-			page.click('button[type="submit"]'),
-			page.waitForNavigation({ waitUntil: 'networkidle0' }),
+			submitButton.click(),
+			page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 }),
 		])
 
 		// Verify login success
