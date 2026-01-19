@@ -1,0 +1,101 @@
+{
+	"name": "Greenlight Mobile API Discovery",
+	"description": "Reverse-engineer the Greenlight iOS mobile app API to find balance endpoints. The browser-based scraper is blocked by mandatory 2FA. Goal: discover if the mobile API offers more favorable authentication (longer-lived tokens) that could bypass repeated 2FA prompts.",
+	"userStories": [
+		{
+			"id": "US-API-001",
+			"title": "Setup Charles Proxy for iOS Traffic Inspection",
+			"description": "Configure Charles Proxy on macOS and iOS device to intercept HTTPS traffic from the Greenlight app.",
+			"acceptanceCriteria": [
+				"Charles Proxy installed and running on macOS",
+				"SSL Proxying enabled for *.greenlight.com",
+				"Charles root certificate installed on iOS device",
+				"iOS device configured to use Charles as HTTP proxy",
+				"Traffic from a test HTTPS site is visible in Charles",
+				"Document any SSL pinning issues encountered"
+			],
+			"dependsOn": [],
+			"passes": false
+		},
+		{
+			"id": "US-API-002",
+			"title": "Capture Authentication Flow",
+			"description": "Capture and document the Greenlight app's login and authentication flow including 2FA handling.",
+			"acceptanceCriteria": [
+				"Login endpoint URL documented",
+				"Authentication request payload structure documented",
+				"Token format identified (JWT, opaque, etc.)",
+				"2FA flow captured and documented",
+				"Any refresh token mechanism identified",
+				"Required headers documented (API keys, device ID, etc.)"
+			],
+			"dependsOn": ["US-API-001"],
+			"passes": false
+		},
+		{
+			"id": "US-API-003",
+			"title": "Capture Balance Endpoint",
+			"description": "Navigate to the balance screen in the app and capture the API call that returns child balance data.",
+			"acceptanceCriteria": [
+				"Balance endpoint URL documented",
+				"HTTP method documented (GET/POST)",
+				"Required request headers documented",
+				"Request payload documented (if any)",
+				"Response format documented with sample (sanitized)",
+				"Child balance data structure identified"
+			],
+			"dependsOn": ["US-API-002"],
+			"passes": false
+		},
+		{
+			"id": "US-API-004",
+			"title": "Document Token Lifecycle",
+			"description": "Observe and document token behavior including expiration and refresh mechanisms.",
+			"acceptanceCriteria": [
+				"Token lifetime observed or estimated",
+				"Token refresh endpoint identified (if exists)",
+				"Background/foreground app behavior captured",
+				"Pull-to-refresh token behavior captured",
+				"Session persistence behavior documented"
+			],
+			"dependsOn": ["US-API-002"],
+			"passes": false
+		},
+		{
+			"id": "US-API-005",
+			"title": "Create Discovery Documentation",
+			"description": "Document all findings in project documentation files.",
+			"acceptanceCriteria": [
+				"File docs/api-discovery.md exists with raw findings",
+				"Base URL and API version documented",
+				"Authentication section complete",
+				"Balance endpoint section complete",
+				"Viability assessment checklist completed",
+				"reference-files/greenlight-trmnl-architecture.md updated with API alternative section"
+			],
+			"dependsOn": ["US-API-003", "US-API-004"],
+			"passes": false
+		},
+		{
+			"id": "US-API-006",
+			"title": "Make Implementation Decision",
+			"description": "Based on findings, determine if API-based approach is viable and document next steps.",
+			"acceptanceCriteria": [
+				"Answer documented: Is there a balance API?",
+				"Answer documented: Can we authenticate programmatically?",
+				"Answer documented: Is token management feasible?",
+				"Decision documented: Proceed with implementation or note blockers",
+				"If viable: Draft prompt-04-alt-api-scraper.md created"
+			],
+			"dependsOn": ["US-API-005"],
+			"passes": false
+		}
+	],
+	"metadata": {
+		"createdAt": "2026-01-17T00:00:00.000Z",
+		"updatedAt": "2026-01-17T00:00:00.000Z",
+		"type": "research-spike",
+		"estimatedEffort": "1 hour",
+		"successCriteria": "Any API endpoint that returns child balance data"
+	}
+}
