@@ -19,20 +19,16 @@ binding = "BROWSER"
 # KV Namespaces - IDs populated by cf-setup.sh script
 # Production namespace
 [[kv_namespaces]]
-binding = "CACHE"
-id = "placeholder-replace-with-actual-id"
-
-# Build configuration
-[build]
-command = "bun run build"
+binding = "KV_CACHE"
+id = "4d2d33c7454a4b71967b76e218c782a8"
 
 # Observability - enable logging and metrics
 [observability]
 enabled = true
 
-# CPU limits for Browser Rendering operations (needs more time)
-[limits]
-cpu_ms = 50000
+# CPU limits removed - requires paid plan
+# [limits]
+# cpu_ms = 50000
 
 # ============================================
 # Environment-specific configurations
