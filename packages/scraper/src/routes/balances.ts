@@ -7,7 +7,7 @@ import { KVCache } from '../storage/cache'
 type Bindings = {
 	KV_CACHE: KVNamespace
 	API_KEY: string
-	GREENLIGHT_EMAIL: string
+	GREENLIGHT_USERNAME: string
 	GREENLIGHT_PASSWORD: string
 	BROWSER?: Fetcher
 }
@@ -38,7 +38,7 @@ balancesRoute.get('/', async (c) => {
 
 		// Initialize browser and scraper
 		let browserClient = new BrowserClient(c.env.BROWSER)
-		let scraper = new GreenlightScraper(c.env.GREENLIGHT_EMAIL, c.env.GREENLIGHT_PASSWORD)
+		let scraper = new GreenlightScraper(c.env.GREENLIGHT_USERNAME, c.env.GREENLIGHT_PASSWORD)
 
 		// Launch browser and scrape
 		let browser = await browserClient.launch()

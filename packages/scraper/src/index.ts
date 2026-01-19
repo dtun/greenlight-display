@@ -8,7 +8,7 @@ import { errorHandler } from './middleware/error'
 type Bindings = {
 	KV_CACHE: KVNamespace
 	API_KEY: string
-	GREENLIGHT_EMAIL: string
+	GREENLIGHT_USERNAME: string
 	GREENLIGHT_PASSWORD: string
 	BROWSER: Fetcher
 }
