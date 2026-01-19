@@ -1,269 +1,246 @@
 {
-  "name": "Greenlight-TRMNL Implementation",
-  "description": "Greenlight balance display app for TRMNL e-ink displays. Phase 1 (Scraper Service) complete with 211 tests passing. Remaining: TRMNL Plugin templates, Cloudflare deployment, and documentation.",
-  "userStories": [
-    {
-      "id": "US-P1-001",
-      "title": "Write Route and Middleware Tests (RED)",
-      "description": "Create test files for routes and middleware following TDD - write tests first, expect failures.",
-      "acceptanceCriteria": [
-        "File packages/scraper/src/__tests__/routes/health.test.ts exists",
-        "File packages/scraper/src/__tests__/routes/balances.test.ts exists",
-        "File packages/scraper/src/__tests__/middleware/auth.test.ts exists",
-        "Health endpoint tests return { status: 'ok' }",
-        "Balances endpoint tests require auth header",
-        "Auth middleware tests reject missing/invalid tokens",
-        "bun test runs (tests fail as expected in RED phase)"
-      ],
-      "dependsOn": [],
-      "passes": true
-    },
-    {
-      "id": "US-P1-002",
-      "title": "Implement Routes and Middleware (GREEN)",
-      "description": "Implement routes and middleware to make tests pass.",
-      "acceptanceCriteria": [
-        "File packages/scraper/src/routes/health.ts implements health endpoint",
-        "File packages/scraper/src/routes/balances.ts implements balances endpoint",
-        "File packages/scraper/src/middleware/auth.ts implements bearer token auth",
-        "File packages/scraper/src/middleware/error.ts implements error handler",
-        "File packages/scraper/src/index.ts wires up all routes",
-        "bun test passes (GREEN phase)"
-      ],
-      "dependsOn": [
-        "US-P1-001"
-      ],
-      "passes": true
-    },
-    {
-      "id": "US-P1-003",
-      "title": "Write Scraper and Cache Tests (RED)",
-      "description": "Create test files for browser client, greenlight scraper, and KV cache.",
-      "acceptanceCriteria": [
-        "File packages/scraper/src/__tests__/scraper/browser.test.ts exists",
-        "File packages/scraper/src/__tests__/scraper/greenlight.test.ts exists",
-        "File packages/scraper/src/__tests__/storage/cache.test.ts exists",
-        "Browser client tests cover launch and close",
-        "Greenlight scraper tests cover balance extraction",
-        "KV cache tests cover get/set operations",
-        "bun test runs (new tests fail as expected in RED phase)"
-      ],
-      "dependsOn": [
-        "US-P1-002"
-      ],
-      "passes": true
-    },
-    {
-      "id": "US-P1-004",
-      "title": "Implement Scraper Core (GREEN)",
-      "description": "Implement browser client, greenlight scraper, and KV cache wrapper.",
-      "acceptanceCriteria": [
-        "File packages/scraper/src/scraper/browser.ts implements BrowserClient",
-        "File packages/scraper/src/scraper/greenlight.ts implements GreenlightScraper",
-        "File packages/scraper/src/storage/cache.ts implements KVCache wrapper",
-        "BrowserClient uses dependency injection for @cloudflare/puppeteer",
-        "GreenlightScraper handles login and balance extraction",
-        "KVCache provides get/set/delete with metadata support",
-        "bun test passes (GREEN phase)"
-      ],
-      "dependsOn": [
-        "US-P1-003"
-      ],
-      "passes": true
-    },
-    {
-      "id": "US-P1-005",
-      "title": "Wire Up Full Scraper Service",
-      "description": "Connect balances route to scraper with caching and error handling.",
-      "acceptanceCriteria": [
-        "Balances route uses KVCache wrapper",
-        "On cache miss, initializes BrowserClient and GreenlightScraper",
-        "Scrape results stored in cache with metadata",
-        "Browser always closed after scraping (try/finally)",
-        "Falls back to stale cache on scraping errors",
-        "All 211 tests pass",
-        "bun test passes"
-      ],
-      "dependsOn": [
-        "US-P1-004"
-      ],
-      "passes": true
-    },
-    {
-      "id": "US-001",
-      "title": "Create TRMNL Plugin Configuration",
-      "description": "Create the settings.yml configuration file for the TRMNL plugin with polling strategy and form fields.",
-      "acceptanceCriteria": [
-        "File packages/trmnl-plugin/settings.yml exists",
-        "Polling strategy configured as GET with 900s interval",
-        "Form fields include api_endpoint and api_key",
-        "Plugin metadata (name, description) is defined",
-        "bun run typecheck passes",
-        "bun run lint passes"
-      ],
-      "dependsOn": [],
-      "passes": true,
-      "completionNotes": "Completed by agent"
-    },
-    {
-      "id": "US-002",
-      "title": "Create TRMNL Liquid Templates",
-      "description": "Create all four Liquid templates for different TRMNL display layouts: full, half_horizontal, half_vertical, and quadrant.",
-      "acceptanceCriteria": [
-        "File packages/trmnl-plugin/full.liquid exists with full screen layout",
-        "File packages/trmnl-plugin/half_horizontal.liquid exists with half width layout",
-        "File packages/trmnl-plugin/half_vertical.liquid exists with half height layout",
-        "File packages/trmnl-plugin/quadrant.liquid exists with quarter screen layout",
-        "Each template loops through merge_variables.accounts",
-        "Each template displays name, spending, savings, and total fields",
-        "Each template shows parent wallet information",
-        "Each template shows last updated timestamp",
-        "Templates use TRMNL CSS classes for e-ink displays",
-        "Liquid syntax is valid (no parsing errors)",
-        "bun run typecheck passes",
-        "bun run lint passes"
-      ],
-      "dependsOn": [
-        "US-001"
-      ],
-      "passes": true,
-      "completionNotes": "Completed by agent"
-    },
-    {
-      "id": "US-003",
-      "title": "Complete Wrangler Configuration",
-      "description": "Configure the wrangler.toml file with all necessary Cloudflare Worker bindings and environment support.",
-      "acceptanceCriteria": [
-        "File packages/scraper/wrangler.toml is complete",
-        "KV namespace bindings are configured",
-        "Browser Rendering API binding is configured",
-        "Environment variable placeholders are defined",
-        "Multi-environment support exists (dev/staging/prod)",
-        "bun run typecheck passes",
-        "bun run lint passes"
-      ],
-      "dependsOn": [],
-      "passes": true,
-      "completionNotes": "Completed by agent"
-    },
-    {
-      "id": "US-004",
-      "title": "Create Cloudflare Setup Scripts",
-      "description": "Create shell scripts for Cloudflare resource provisioning and deployment.",
-      "acceptanceCriteria": [
-        "File scripts/cf-setup.sh exists and creates KV namespaces",
-        "File scripts/cf-deploy.sh exists and deploys to Cloudflare Workers",
-        "File scripts/cf-secrets.sh exists and manages secrets",
-        "Scripts are executable (chmod +x)",
-        "Scripts include usage documentation in comments",
-        "bun run typecheck passes",
-        "bun run lint passes"
-      ],
-      "dependsOn": [
-        "US-003"
-      ],
-      "passes": true,
-      "completionNotes": "Completed by agent"
-    },
-    {
-      "id": "US-005",
-      "title": "Create GitHub Actions Deployment Workflow",
-      "description": "Create a GitHub Actions workflow for automated Cloudflare Workers deployment.",
-      "acceptanceCriteria": [
-        "File .github/workflows/deploy-cloudflare.yml exists",
-        "Workflow triggers on push to main and staging branches",
-        "Workflow runs type check and build before deploy",
-        "Workflow uses wrangler-action for deployment",
-        "Workflow handles both staging and production environments",
-        "bun run typecheck passes",
-        "bun run lint passes"
-      ],
-      "dependsOn": [
-        "US-003"
-      ],
-      "passes": true,
-      "completionNotes": "Completed by agent"
-    },
-    {
-      "id": "US-006",
-      "title": "Create Documentation Files",
-      "description": "Create comprehensive documentation in the docs/ directory covering setup, troubleshooting, and deployment.",
-      "acceptanceCriteria": [
-        "File docs/QUICK_START.md exists with 5-minute setup guide",
-        "File docs/TROUBLESHOOTING.md exists with common issues and fixes",
-        "File docs/TRMNL_SETUP.md exists with detailed TRMNL configuration",
-        "File docs/CLOUDFLARE_DEPLOYMENT.md exists with deployment guide",
-        "File docs/SECURITY.md exists with security best practices",
-        "File docs/FAQ.md exists with frequently asked questions",
-        "All documentation renders correctly in markdown",
-        "All internal links are valid",
-        "bun run typecheck passes",
-        "bun run lint passes"
-      ],
-      "dependsOn": [
-        "US-004",
-        "US-005"
-      ],
-      "passes": true,
-      "completionNotes": "Completed by agent"
-    },
-    {
-      "id": "US-007",
-      "title": "Update README with Project Overview",
-      "description": "Update the main README.md with features overview, quick start instructions, and architecture diagram.",
-      "acceptanceCriteria": [
-        "README.md includes features overview section",
-        "README.md includes quick start instructions",
-        "README.md includes architecture diagram or description",
-        "README.md links to detailed docs in docs/ directory",
-        "All links in README are valid",
-        "bun run typecheck passes",
-        "bun run lint passes"
-      ],
-      "dependsOn": [
-        "US-006"
-      ],
-      "passes": true,
-      "completionNotes": "Completed by agent"
-    },
-    {
-      "id": "US-008",
-      "title": "Create Setup and Test Scripts",
-      "description": "Create helper scripts for initial project setup and deployment validation.",
-      "acceptanceCriteria": [
-        "File scripts/setup.sh exists for initial setup automation",
-        "File scripts/test-deployment.sh exists to validate deployment",
-        "Scripts are executable (chmod +x)",
-        "Scripts include usage documentation in comments",
-        "bun run typecheck passes",
-        "bun run lint passes"
-      ],
-      "dependsOn": [
-        "US-004"
-      ],
-      "passes": true,
-      "completionNotes": "Completed by agent"
-    },
-    {
-      "id": "US-009",
-      "title": "Create Environment Template and Examples",
-      "description": "Create environment variable template and TRMNL plugin export package.",
-      "acceptanceCriteria": [
-        "File .env.example exists with all required environment variables",
-        "Environment template includes descriptive comments",
-        "File examples/trmnl-plugin-export.zip exists with ready-to-import plugin",
-        "Plugin export includes settings.yml and all liquid templates",
-        "bun run typecheck passes",
-        "bun run lint passes"
-      ],
-      "dependsOn": [
-        "US-002"
-      ],
-      "passes": true,
-      "completionNotes": "Completed by agent"
-    }
-  ],
-  "metadata": {
-    "updatedAt": "2026-01-17T21:13:17.990Z"
-  }
+	"name": "Greenlight-TRMNL Implementation",
+	"description": "Greenlight balance display app for TRMNL e-ink displays. Phase 1 (Scraper Service) complete with 211 tests passing. Remaining: TRMNL Plugin templates, Cloudflare deployment, and documentation.",
+	"userStories": [
+		{
+			"id": "US-P1-001",
+			"title": "Write Route and Middleware Tests (RED)",
+			"description": "Create test files for routes and middleware following TDD - write tests first, expect failures.",
+			"acceptanceCriteria": [
+				"File packages/scraper/src/__tests__/routes/health.test.ts exists",
+				"File packages/scraper/src/__tests__/routes/balances.test.ts exists",
+				"File packages/scraper/src/__tests__/middleware/auth.test.ts exists",
+				"Health endpoint tests return { status: 'ok' }",
+				"Balances endpoint tests require auth header",
+				"Auth middleware tests reject missing/invalid tokens",
+				"bun test runs (tests fail as expected in RED phase)"
+			],
+			"dependsOn": [],
+			"passes": true
+		},
+		{
+			"id": "US-P1-002",
+			"title": "Implement Routes and Middleware (GREEN)",
+			"description": "Implement routes and middleware to make tests pass.",
+			"acceptanceCriteria": [
+				"File packages/scraper/src/routes/health.ts implements health endpoint",
+				"File packages/scraper/src/routes/balances.ts implements balances endpoint",
+				"File packages/scraper/src/middleware/auth.ts implements bearer token auth",
+				"File packages/scraper/src/middleware/error.ts implements error handler",
+				"File packages/scraper/src/index.ts wires up all routes",
+				"bun test passes (GREEN phase)"
+			],
+			"dependsOn": ["US-P1-001"],
+			"passes": true
+		},
+		{
+			"id": "US-P1-003",
+			"title": "Write Scraper and Cache Tests (RED)",
+			"description": "Create test files for browser client, greenlight scraper, and KV cache.",
+			"acceptanceCriteria": [
+				"File packages/scraper/src/__tests__/scraper/browser.test.ts exists",
+				"File packages/scraper/src/__tests__/scraper/greenlight.test.ts exists",
+				"File packages/scraper/src/__tests__/storage/cache.test.ts exists",
+				"Browser client tests cover launch and close",
+				"Greenlight scraper tests cover balance extraction",
+				"KV cache tests cover get/set operations",
+				"bun test runs (new tests fail as expected in RED phase)"
+			],
+			"dependsOn": ["US-P1-002"],
+			"passes": true
+		},
+		{
+			"id": "US-P1-004",
+			"title": "Implement Scraper Core (GREEN)",
+			"description": "Implement browser client, greenlight scraper, and KV cache wrapper.",
+			"acceptanceCriteria": [
+				"File packages/scraper/src/scraper/browser.ts implements BrowserClient",
+				"File packages/scraper/src/scraper/greenlight.ts implements GreenlightScraper",
+				"File packages/scraper/src/storage/cache.ts implements KVCache wrapper",
+				"BrowserClient uses dependency injection for @cloudflare/puppeteer",
+				"GreenlightScraper handles login and balance extraction",
+				"KVCache provides get/set/delete with metadata support",
+				"bun test passes (GREEN phase)"
+			],
+			"dependsOn": ["US-P1-003"],
+			"passes": true
+		},
+		{
+			"id": "US-P1-005",
+			"title": "Wire Up Full Scraper Service",
+			"description": "Connect balances route to scraper with caching and error handling.",
+			"acceptanceCriteria": [
+				"Balances route uses KVCache wrapper",
+				"On cache miss, initializes BrowserClient and GreenlightScraper",
+				"Scrape results stored in cache with metadata",
+				"Browser always closed after scraping (try/finally)",
+				"Falls back to stale cache on scraping errors",
+				"All 211 tests pass",
+				"bun test passes"
+			],
+			"dependsOn": ["US-P1-004"],
+			"passes": true
+		},
+		{
+			"id": "US-001",
+			"title": "Create TRMNL Plugin Configuration",
+			"description": "Create the settings.yml configuration file for the TRMNL plugin with polling strategy and form fields.",
+			"acceptanceCriteria": [
+				"File packages/trmnl-plugin/settings.yml exists",
+				"Polling strategy configured as GET with 900s interval",
+				"Form fields include api_endpoint and api_key",
+				"Plugin metadata (name, description) is defined",
+				"bun run typecheck passes",
+				"bun run lint passes"
+			],
+			"dependsOn": [],
+			"passes": true,
+			"completionNotes": "Completed by agent"
+		},
+		{
+			"id": "US-002",
+			"title": "Create TRMNL Liquid Templates",
+			"description": "Create all four Liquid templates for different TRMNL display layouts: full, half_horizontal, half_vertical, and quadrant.",
+			"acceptanceCriteria": [
+				"File packages/trmnl-plugin/full.liquid exists with full screen layout",
+				"File packages/trmnl-plugin/half_horizontal.liquid exists with half width layout",
+				"File packages/trmnl-plugin/half_vertical.liquid exists with half height layout",
+				"File packages/trmnl-plugin/quadrant.liquid exists with quarter screen layout",
+				"Each template loops through merge_variables.accounts",
+				"Each template displays name, spending, savings, and total fields",
+				"Each template shows parent wallet information",
+				"Each template shows last updated timestamp",
+				"Templates use TRMNL CSS classes for e-ink displays",
+				"Liquid syntax is valid (no parsing errors)",
+				"bun run typecheck passes",
+				"bun run lint passes"
+			],
+			"dependsOn": ["US-001"],
+			"passes": true,
+			"completionNotes": "Completed by agent"
+		},
+		{
+			"id": "US-003",
+			"title": "Complete Wrangler Configuration",
+			"description": "Configure the wrangler.toml file with all necessary Cloudflare Worker bindings and environment support.",
+			"acceptanceCriteria": [
+				"File packages/scraper/wrangler.toml is complete",
+				"KV namespace bindings are configured",
+				"Browser Rendering API binding is configured",
+				"Environment variable placeholders are defined",
+				"Multi-environment support exists (dev/staging/prod)",
+				"bun run typecheck passes",
+				"bun run lint passes"
+			],
+			"dependsOn": [],
+			"passes": true,
+			"completionNotes": "Completed by agent"
+		},
+		{
+			"id": "US-004",
+			"title": "Create Cloudflare Setup Scripts",
+			"description": "Create shell scripts for Cloudflare resource provisioning and deployment.",
+			"acceptanceCriteria": [
+				"File scripts/cf-setup.sh exists and creates KV namespaces",
+				"File scripts/cf-deploy.sh exists and deploys to Cloudflare Workers",
+				"File scripts/cf-secrets.sh exists and manages secrets",
+				"Scripts are executable (chmod +x)",
+				"Scripts include usage documentation in comments",
+				"bun run typecheck passes",
+				"bun run lint passes"
+			],
+			"dependsOn": ["US-003"],
+			"passes": true,
+			"completionNotes": "Completed by agent"
+		},
+		{
+			"id": "US-005",
+			"title": "Create GitHub Actions Deployment Workflow",
+			"description": "Create a GitHub Actions workflow for automated Cloudflare Workers deployment.",
+			"acceptanceCriteria": [
+				"File .github/workflows/deploy-cloudflare.yml exists",
+				"Workflow triggers on push to main and staging branches",
+				"Workflow runs type check and build before deploy",
+				"Workflow uses wrangler-action for deployment",
+				"Workflow handles both staging and production environments",
+				"bun run typecheck passes",
+				"bun run lint passes"
+			],
+			"dependsOn": ["US-003"],
+			"passes": true,
+			"completionNotes": "Completed by agent"
+		},
+		{
+			"id": "US-006",
+			"title": "Create Documentation Files",
+			"description": "Create comprehensive documentation in the docs/ directory covering setup, troubleshooting, and deployment.",
+			"acceptanceCriteria": [
+				"File docs/QUICK_START.md exists with 5-minute setup guide",
+				"File docs/TROUBLESHOOTING.md exists with common issues and fixes",
+				"File docs/TRMNL_SETUP.md exists with detailed TRMNL configuration",
+				"File docs/CLOUDFLARE_DEPLOYMENT.md exists with deployment guide",
+				"File docs/SECURITY.md exists with security best practices",
+				"File docs/FAQ.md exists with frequently asked questions",
+				"All documentation renders correctly in markdown",
+				"All internal links are valid",
+				"bun run typecheck passes",
+				"bun run lint passes"
+			],
+			"dependsOn": ["US-004", "US-005"],
+			"passes": true,
+			"completionNotes": "Completed by agent"
+		},
+		{
+			"id": "US-007",
+			"title": "Update README with Project Overview",
+			"description": "Update the main README.md with features overview, quick start instructions, and architecture diagram.",
+			"acceptanceCriteria": [
+				"README.md includes features overview section",
+				"README.md includes quick start instructions",
+				"README.md includes architecture diagram or description",
+				"README.md links to detailed docs in docs/ directory",
+				"All links in README are valid",
+				"bun run typecheck passes",
+				"bun run lint passes"
+			],
+			"dependsOn": ["US-006"],
+			"passes": true,
+			"completionNotes": "Completed by agent"
+		},
+		{
+			"id": "US-008",
+			"title": "Create Setup and Test Scripts",
+			"description": "Create helper scripts for initial project setup and deployment validation.",
+			"acceptanceCriteria": [
+				"File scripts/setup.sh exists for initial setup automation",
+				"File scripts/test-deployment.sh exists to validate deployment",
+				"Scripts are executable (chmod +x)",
+				"Scripts include usage documentation in comments",
+				"bun run typecheck passes",
+				"bun run lint passes"
+			],
+			"dependsOn": ["US-004"],
+			"passes": true,
+			"completionNotes": "Completed by agent"
+		},
+		{
+			"id": "US-009",
+			"title": "Create Environment Template and Examples",
+			"description": "Create environment variable template and TRMNL plugin export package.",
+			"acceptanceCriteria": [
+				"File .env.example exists with all required environment variables",
+				"Environment template includes descriptive comments",
+				"File examples/trmnl-plugin-export.zip exists with ready-to-import plugin",
+				"Plugin export includes settings.yml and all liquid templates",
+				"bun run typecheck passes",
+				"bun run lint passes"
+			],
+			"dependsOn": ["US-002"],
+			"passes": true,
+			"completionNotes": "Completed by agent"
+		}
+	],
+	"metadata": {
+		"updatedAt": "2026-01-17T21:13:17.990Z"
+	}
 }
